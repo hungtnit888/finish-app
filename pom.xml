@@ -12,11 +12,11 @@
     </parent>
 
     <!-- Project Information -->
-    <groupId>com.example</groupId>
+    <groupId>com.newcom</groupId>
     <artifactId>spring-boot-base</artifactId>
     <version>1.0.0</version>
     <name>spring-boot-base</name>
-    <description>Base Spring Boot Application</description>
+    <description>My Spring Boot Application</description>
 
     <!-- Properties -->
     <properties>
@@ -27,7 +27,7 @@
         <lombok.version>1.18.24</lombok.version>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
         <jjwt.version>0.11.5</jjwt.version>
-        <swagger.version>2.0.2</swagger.version>
+        <swagger.version>1.7.0</swagger.version>
     </properties>
 
     <!-- Dependencies -->
@@ -52,6 +52,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
         </dependency>
 
         <!-- Database -->
