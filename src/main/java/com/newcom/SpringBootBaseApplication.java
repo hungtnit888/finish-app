@@ -8,4 +8,4 @@ public class SpringBootBaseApplication {
     public static void main(String[] args) {
         SpringApplication.run(SpringBootBaseApplication.class, args);
     }
-} 
+}

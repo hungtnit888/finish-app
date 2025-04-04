@@ -1,39 +1,58 @@
 #!/bin/bash
 
-# Build image nếu chưa có
-if [ "$(docker images -q spring-dev-env:1.0 2> /dev/null)" == "" ]; then
-    echo "Building development environment..."
-    docker build -t spring-dev-env:1.0 -f docker/Dockerfile .
+# Kiểm tra Docker đã cài đặt chưa
+if ! command -v docker &> /dev/null; then
+    echo "Docker chưa được cài đặt. Vui lòng cài đặt Docker trước."
+    exit 1
 fi
 
-# Kiểm tra container đã chạy chưa
-if [ "$(docker ps -q -f name=spring-dev)" ]; then
-    echo "Development environment is already running"
-    echo "Connection details:"
-    echo "Host: localhost"
-    echo "Port: 2222"
-    echo "Username: developer"
-    echo "Password: developer"
-    exit 0
-fi
+# Cấp quyền thực thi cho các script
+echo "Cấp quyền thực thi cho các script..."
+chmod +x $(dirname "$0")/db-env.sh
+chmod +x $(dirname "$0")/check-env.sh
 
-# Chạy container
 echo "Starting development environment..."
+
+# Build image từ thư mục gốc
+echo "Building development image..."
+cd ..
+docker build -t spring-dev-env:1.0 -f docker/Dockerfile .
+
+# Kiểm tra container đã tồn tại chưa
+if docker ps -a | grep -q spring-dev; then
+    echo "Container spring-dev đã tồn tại. Đang xóa..."
+    docker stop spring-dev
+    docker rm spring-dev
+fi
+
+# Tạo và chạy container
+echo "Creating and starting development container..."
 docker run -d \
     --name spring-dev \
-    -v $(pwd):/app \
-    -v maven-repo:/home/developer/.m2 \
+    -p 8080:8080 \
     -p 2222:22 \
+    -v $(pwd):/app \
+    -v ~/.m2:/home/developer/.m2 \
     spring-dev-env:1.0
 
-echo "Development environment is ready!"
-echo "You can now use any IDE with these settings:"
-echo "1. JDK path: /usr/lib/jvm/java-11-openjdk-amd64"
-echo "2. Maven path: /usr/share/maven"
-echo "3. SSH connection:"
-echo "   - Host: localhost"
-echo "   - Port: 2222"
-echo "   - Username: developer"
-echo "   - Password: developer"
-echo ""
-echo "To stop the environment, run: docker stop spring-dev" 
+# Kiểm tra container đã chạy chưa
+if docker ps | grep -q spring-dev; then
+    echo "Development environment is ready!"
+    echo "Container name: spring-dev"
+    echo "SSH port: 2222"
+    echo "Application port: 8080"
+    echo ""
+    echo "Để cập nhật thư viện trong Docker:"
+    echo "1. Sửa file pom.xml trên máy host"
+    echo "2. Chạy lệnh: docker exec -it spring-dev mvn dependency:resolve"
+    echo "3. Nếu cần copy .m2 từ container ra host:"
+    echo "   docker cp spring-dev:/home/developer/.m2 ~/.m2"
+    echo ""
+    echo "Để quản lý các container database:"
+    echo "1. Khởi động: ./docker/db-env.sh start"
+    echo "2. Dừng: ./docker/db-env.sh stop"
+    echo "3. Khởi động lại: ./docker/db-env.sh restart"
+else
+    echo "Failed to start development environment"
+    exit 1
+fi 
