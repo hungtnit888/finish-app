@@ -1,0 +1,41 @@
+# Maven
+target/
+!target/*.jar
+*.class
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# Logs
+logs/
+*.log
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Docker
+.docker/
+docker-compose*.yml
+.dockerignore
+
+# Git
+.git/
+.gitignore
+
+# Temp files
+*.swp
+*.swo
+*~
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Environment variables
+.env*
+!.env.example 

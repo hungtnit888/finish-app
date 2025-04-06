@@ -1,0 +1,196 @@
+spring:
+  application:
+    name: finish-app
+  profiles:
+    active: local
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 1200000
+  data:
+    mongodb:
+      auto-index-creation: true
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+      timeout: 10000
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000 # 1 hour
+      cache-null-values: true
+      use-key-prefix: true
+      key-prefix: finish-app
+      enable-statistics: true
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.xml
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AUTH_SERVER_URL:http://localhost:8080/auth/realms/finish-app}
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: false
+
+server:
+  port: 8080
+  shutdown: graceful
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+    min-response-size: 1024
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: when_authorized
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    export:
+      prometheus:
+        enabled: true
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+  show-actuator: true
+
+sentry:
+  dsn: ${SENTRY_DSN:}
+  traces-sample-rate: 1.0
+  logging:
+    minimum-event-level: warn
+    minimum-breadcrumb-level: info
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg%n"
+  level:
+    root: INFO
+    com.example: DEBUG
+    org.springframework.web: INFO
+    org.hibernate: INFO
+    org.mongodb: INFO
+
+# Database configurations
+datasource:
+  url: jdbc:postgresql://localhost:5432/basedb
+  username: postgres
+  password: postgres
+  driver-class-name: org.postgresql.Driver
+
+# MongoDB configuration
+data:
+  mongodb:
+    uri: mongodb://localhost:27017/basedb
+
+# Redis configuration
+redis:
+  host: localhost
+  port: 6379
+
+# Liquibase configuration
+liquibase:
+  change-log: classpath:db/changelog/db.changelog-master.xml
+  enabled: true
+
+# Security configuration
+security:
+  jwt:
+    secret: your-secret-key
+    expiration: 86400000 # 24 hours
+
+# Quartz configuration
+quartz:
+  job-store-type: jdbc
+  properties:
+    org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+
+# Cloud configuration
+cloud:
+  config:
+    enabled: false
+  discovery:
+    enabled: false
+
+# Server configuration
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+# Actuator configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+# Swagger configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+
+# Sentry configuration
+sentry:
+  dsn: your-sentry-dsn
+  traces-sample-rate: 1.0
+  logging:
+    minimum-event-level: WARN
+    minimum-breadcrumb-level: INFO
+
+# Logging configuration
+logging:
+  level:
+    root: INFO
+    com.newcom.base: DEBUG
+    org.springframework.web: INFO
+    org.hibernate: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/application.log
+    max-size: 10MB
+    max-history: 7 
