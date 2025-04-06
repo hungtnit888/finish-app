@@ -6,56 +6,256 @@
 ---
 
 <a name="english"></a>
-# Contributing Guidelines
+# Contributing to Finish App
 
-Thank you for your interest in contributing to our project! This document provides guidelines and instructions for contributing.
+## Overview
 
-## Code Style
+Thank you for considering contributing to Finish App! This document provides guidelines and instructions for contributing to our Kubernetes-based application.
 
-1. Follow the Google Java Style Guide
-2. Use 4 spaces for indentation
-3. Maximum line length: 100 characters
-4. Use meaningful variable and method names
-5. Add Javadoc comments for public methods
+## Development Environment Setup
 
-## Git Workflow
+1. Install Prerequisites:
+   - Kubernetes cluster (minikube/kind for local development)
+   - kubectl
+   - Helm
+   - Java 17
+   - Maven
 
-1. **Branch Naming**
-   - Feature: `feature/feature-name`
-   - Bugfix: `bugfix/bug-name`
-   - Hotfix: `hotfix/issue-name`
-   - Release: `release/version`
+2. Clone the repository:
+```bash
+git clone https://github.com/yourusername/finish-app.git
+cd finish-app
+```
 
-2. **Commit Messages**
-   - Format: `type(scope): description`
-   - Types: feat, fix, docs, style, refactor, test, chore
-   - Example: `feat(auth): add JWT authentication`
+3. Set up local development environment:
+```bash
+# Start minikube
+minikube start
 
-3. **Pull Request Process**
-   - Create PR from feature branch to main
-   - Add clear description and related issues
-   - Request review from at least 2 maintainers
-   - Address all review comments
-   - Ensure CI checks pass
+# Enable ingress
+minikube addons enable ingress
 
-## Development Process
+# Install dependencies
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+```
 
-1. **Setup**
+## Development Workflow
+
+1. Create a new branch:
+```bash
+git checkout -b feature/your-feature
+```
+
+2. Make your changes following our coding standards
+
+3. Test your changes:
+```bash
+# Run unit tests
+mvn test
+
+# Deploy to local cluster
+./k8s/scripts/deploy.sh dev
+```
+
+4. Submit a pull request
+
+## Kubernetes Development
+
+### Directory Structure
+
+```
+k8s/
+├── app/                    # Application deployment files
+├── databases/             # Database StatefulSets
+├── monitoring/            # Prometheus and Grafana setup
+├── ingress/              # Ingress configurations
+├── env/                  # Environment-specific configs
+└── scripts/              # Utility scripts
+```
+
+### Best Practices
+
+1. Resource Configuration
+   - Use resource limits and requests
+   - Implement health checks
+   - Configure proper security contexts
+
+2. Environment Management
+   - Keep environment-specific configs in k8s/env/
+   - Use ConfigMaps and Secrets appropriately
+   - Document environment variables
+
+3. Monitoring
+   - Add relevant metrics
+   - Create useful dashboards
+   - Configure meaningful alerts
+
+## Testing
+
+1. Unit Tests
+```bash
+mvn test
+```
+
+2. Integration Tests
+```bash
+mvn verify
+```
+
+3. Kubernetes Tests
+```bash
+# Test deployment
+./k8s/scripts/deploy.sh dev
+
+# Verify services
+kubectl get pods -n finish-app
+```
+
+## Documentation
+
+1. Code Documentation
+   - Document all public APIs
+   - Add meaningful comments
+   - Update README.md when needed
+
+2. Kubernetes Configuration
+   - Document resource requirements
+   - Explain configuration options
+   - Update deployment guides
+
+## Pull Request Process
+
+1. Update Documentation
+   - Add/update relevant documentation
+   - Include configuration changes
+   - Document new features
+
+2. Testing
+   - Add appropriate tests
+   - Ensure all tests pass
+   - Test deployment process
+
+3. Review
+   - Request review from maintainers
+   - Address review comments
+   - Update PR as needed
+
+## Style Guide
+
+### Code Style
+
+1. Java
+   - Follow Google Java Style Guide
+   - Use meaningful variable names
+   - Add proper documentation
+
+2. Kubernetes Configuration
+   - Use consistent indentation
+   - Follow Kubernetes naming conventions
+   - Document all configurations
+
+### Commit Messages
+
+1. Format
+```
+type(scope): description
+
+[optional body]
+[optional footer]
+```
+
+2. Types
+   - feat: New feature
+   - fix: Bug fix
+   - docs: Documentation
+   - chore: Maintenance
+   - refactor: Code restructuring
+
+## Release Process
+
+1. Version Bump
+   - Update version in pom.xml
+   - Update Kubernetes configurations
+   - Update documentation
+
+2. Testing
+   - Run all tests
+   - Deploy to staging
+   - Verify functionality
+
+3. Release
+   - Create release branch
+   - Tag release
+   - Deploy to production
+
+## Getting Help
+
+- Join our Slack channel
+- Check existing issues
+- Contact maintainers
+
+## Code of Conduct
+
+Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## License
+
+By contributing, you agree that your contributions will be licensed under the project's MIT License.
+
+---
+
+<a name="tiếng-việt"></a>
+# Hướng dẫn đóng góp
+
+Cảm ơn bạn đã quan tâm đến việc đóng góp cho dự án của chúng tôi! Tài liệu này cung cấp các hướng dẫn và chỉ dẫn cho việc đóng góp.
+
+## Quy tắc viết code
+
+1. Tuân theo Google Java Style Guide
+2. Sử dụng 4 khoảng trắng cho thụt lề
+3. Độ dài tối đa dòng: 100 ký tự
+4. Sử dụng tên biến và phương thức có ý nghĩa
+5. Thêm chú thích Javadoc cho các phương thức public
+
+## Quy trình Git
+
+1. **Đặt tên nhánh**
+   - Tính năng: `feature/tên-tính-năng`
+   - Sửa lỗi: `bugfix/tên-lỗi`
+   - Sửa khẩn cấp: `hotfix/tên-vấn-đề`
+   - Phát hành: `release/phiên-bản`
+
+2. **Tin nhắn commit**
+   - Định dạng: `type(scope): mô tả`
+   - Loại: feat, fix, docs, style, refactor, test, chore
+   - Ví dụ: `feat(auth): thêm xác thực JWT`
+
+3. **Quy trình Pull Request**
+   - Tạo PR từ nhánh tính năng vào main
+   - Thêm mô tả rõ ràng và các vấn đề liên quan
+   - Yêu cầu review từ ít nhất 2 người bảo trì
+   - Giải quyết tất cả nhận xét review
+   - Đảm bảo các kiểm tra CI đều pass
+
+## Quy trình phát triển
+
+1. **Cài đặt**
    ```bash
    git clone https://github.com/yourusername/finish-app.git
    cd finish-app
    mvn clean install
    ```
 
-2. **Create Feature Branch**
+2. **Tạo nhánh tính năng**
    ```bash
-   git checkout -b feature/your-feature
+   git checkout -b feature/tính-năng-của-bạn
    ```
 
-3. **Make Changes**
-   - Follow code style guidelines
-   - Write unit tests
-   - Update documentation
+3. **Thực hiện thay đổi**
+   - Tuân theo quy tắc viết code
+   - Viết unit test
+   - Cập nhật tài liệu
 
 4. **Run Tests**
    ```bash
@@ -147,146 +347,145 @@ Thank you for your interest in contributing to our project! This document provid
    - Email: support@example.com
    - Slack: #project-support
 
----
+## Kubernetes Development
 
-<a name="tiếng-việt"></a>
-# Hướng dẫn đóng góp
+### Directory Structure
 
-Cảm ơn bạn đã quan tâm đến việc đóng góp cho dự án của chúng tôi! Tài liệu này cung cấp các hướng dẫn và chỉ dẫn cho việc đóng góp.
+```
+k8s/
+├── app/                    # Application deployment files
+├── databases/             # Database StatefulSets
+├── monitoring/            # Prometheus and Grafana setup
+├── ingress/              # Ingress configurations
+├── env/                  # Environment-specific configs
+└── scripts/              # Utility scripts
+```
 
-## Quy tắc viết code
+### Best Practices
 
-1. Tuân theo Google Java Style Guide
-2. Sử dụng 4 khoảng trắng cho thụt lề
-3. Độ dài tối đa dòng: 100 ký tự
-4. Sử dụng tên biến và phương thức có ý nghĩa
-5. Thêm chú thích Javadoc cho các phương thức public
+1. Resource Configuration
+   - Use resource limits and requests
+   - Implement health checks
+   - Configure proper security contexts
 
-## Quy trình Git
+2. Environment Management
+   - Keep environment-specific configs in k8s/env/
+   - Use ConfigMaps and Secrets appropriately
+   - Document environment variables
 
-1. **Đặt tên nhánh**
-   - Tính năng: `feature/tên-tính-năng`
-   - Sửa lỗi: `bugfix/tên-lỗi`
-   - Sửa khẩn cấp: `hotfix/tên-vấn-đề`
-   - Phát hành: `release/phiên-bản`
+3. Monitoring
+   - Add relevant metrics
+   - Create useful dashboards
+   - Configure meaningful alerts
 
-2. **Tin nhắn commit**
-   - Định dạng: `type(scope): mô tả`
-   - Loại: feat, fix, docs, style, refactor, test, chore
-   - Ví dụ: `feat(auth): thêm xác thực JWT`
+## Testing
 
-3. **Quy trình Pull Request**
-   - Tạo PR từ nhánh tính năng vào main
-   - Thêm mô tả rõ ràng và các vấn đề liên quan
-   - Yêu cầu review từ ít nhất 2 người bảo trì
-   - Giải quyết tất cả nhận xét review
-   - Đảm bảo các kiểm tra CI đều pass
+1. Unit Tests
+```bash
+mvn test
+```
 
-## Quy trình phát triển
+2. Integration Tests
+```bash
+mvn verify
+```
 
-1. **Cài đặt**
-   ```bash
-   git clone https://github.com/yourusername/finish-app.git
-   cd finish-app
-   mvn clean install
-   ```
+3. Kubernetes Tests
+```bash
+# Test deployment
+./k8s/scripts/deploy.sh dev
 
-2. **Tạo nhánh tính năng**
-   ```bash
-   git checkout -b feature/tính-năng-của-bạn
-   ```
+# Verify services
+kubectl get pods -n finish-app
+```
 
-3. **Thực hiện thay đổi**
-   - Tuân theo quy tắc viết code
-   - Viết unit test
-   - Cập nhật tài liệu
+## Documentation
 
-4. **Chạy kiểm thử**
-   ```bash
-   mvn test
-   ```
+1. Code Documentation
+   - Document all public APIs
+   - Add meaningful comments
+   - Update README.md when needed
 
-5. **Chất lượng mã nguồn**
-   ```bash
-   mvn sonar:sonar
-   ```
+2. Kubernetes Configuration
+   - Document resource requirements
+   - Explain configuration options
+   - Update deployment guides
 
-6. **Commit thay đổi**
-   ```bash
-   git add .
-   git commit -m "feat(scope): mô tả"
-   ```
+## Pull Request Process
 
-7. **Đẩy thay đổi**
-   ```bash
-   git push origin feature/tính-năng-của-bạn
-   ```
+1. Update Documentation
+   - Add/update relevant documentation
+   - Include configuration changes
+   - Document new features
 
-## Yêu cầu kiểm thử
+2. Testing
+   - Add appropriate tests
+   - Ensure all tests pass
+   - Test deployment process
 
-1. **Unit Test**
-   - Tối thiểu 80% coverage
-   - Sử dụng JUnit 5
-   - Tuân theo mẫu AAA
-   - Sử dụng tên test có ý nghĩa
+3. Review
+   - Request review from maintainers
+   - Address review comments
+   - Update PR as needed
 
-2. **Kiểm thử tích hợp**
-   - Kiểm thử API endpoints
-   - Kiểm thử thao tác cơ sở dữ liệu
-   - Sử dụng TestContainers
+## Style Guide
 
-3. **Kiểm thử hiệu suất**
-   - Sử dụng JMeter
-   - Kiểm thử dưới tải
-   - Giám sát metrics
+### Code Style
 
-## Tài liệu
+1. Java
+   - Follow Google Java Style Guide
+   - Use meaningful variable names
+   - Add proper documentation
 
-1. **Tài liệu code**
-   - Javadoc cho các phương thức public
-   - Chú thích nội dòng cho logic phức tạp
-   - Cập nhật README cho tính năng mới
+2. Kubernetes Configuration
+   - Use consistent indentation
+   - Follow Kubernetes naming conventions
+   - Document all configurations
 
-2. **Tài liệu API**
-   - Chú thích OpenAPI
-   - Ví dụ request/response
-   - Kịch bản lỗi
+### Commit Messages
 
-3. **Tài liệu kiến trúc**
-   - Cập nhật biểu đồ
-   - Tài liệu hóa quyết định thiết kế
-   - Cập nhật hướng dẫn triển khai
+1. Format
+```
+type(scope): description
 
-## Quy trình review
+[optional body]
+[optional footer]
+```
 
-1. **Review code**
-   - Kiểm tra quy tắc viết code
-   - Xác minh test coverage
-   - Xem xét khía cạnh bảo mật
-   - Kiểm tra tác động hiệu suất
+2. Types
+   - feat: New feature
+   - fix: Bug fix
+   - docs: Documentation
+   - chore: Maintenance
+   - refactor: Code restructuring
 
-2. **Phê duyệt**
-   - Cần ít nhất 2 phê duyệt
-   - Phải giải quyết tất cả nhận xét
-   - Các kiểm tra CI phải pass
+## Release Process
 
-3. **Merge**
-   - Squash và merge
-   - Xóa nhánh tính năng
-   - Cập nhật phiên bản nếu cần
+1. Version Bump
+   - Update version in pom.xml
+   - Update Kubernetes configurations
+   - Update documentation
 
-## Hỗ trợ
+2. Testing
+   - Run all tests
+   - Deploy to staging
+   - Verify functionality
 
-1. **Vấn đề**
-   - Sử dụng mẫu issue
-   - Cung cấp các bước tái hiện
-   - Thêm log liên quan
+3. Release
+   - Create release branch
+   - Tag release
+   - Deploy to production
 
-2. **Thảo luận**
-   - Sử dụng GitHub Discussions
-   - Tuân theo quy tắc cộng đồng
-   - Tôn trọng lẫn nhau
+## Getting Help
 
-3. **Liên hệ**
-   - Email: support@example.com
-   - Slack: #project-support 
+- Join our Slack channel
+- Check existing issues
+- Contact maintainers
+
+## Code of Conduct
+
+Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## License
+
+By contributing, you agree that your contributions will be licensed under the project's MIT License. 

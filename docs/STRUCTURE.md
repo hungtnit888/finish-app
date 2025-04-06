@@ -8,127 +8,287 @@
 <a name="english"></a>
 # Project Structure
 
+## Overview
+
+The Finish App is structured as a Kubernetes-based microservices application with the following main components:
+
 ```
-src/
-├── main/
-│   ├── java/
-│   │   ├── com.example.base/
-│   │   │   ├── config/
-│   │   │   ├── controller/
-│   │   │   ├── dto/
-│   │   │   ├── exception/
-│   │   │   ├── model/
-│   │   │   ├── repository/
-│   │   │   ├── security/
-│   │   │   ├── service/
-│   │   │   └── Application.java
-│   │   └── com.example.demo/
-│   │       ├── controller/
-│   │       ├── dto/
-│   │       ├── model/
-│   │       ├── repository/
-│   │       └── service/
-│   └── resources/
-│       ├── application.yml
-│       ├── application-local.yml
-│       └── application-test.yml
-├── test/
-│   └── java/
-│       └── com.example.base/
-└── docker/
-    ├── scripts/
-    └── docker-compose.yml
+.
+├── k8s/                    # Kubernetes configuration files
+│   ├── app/               # Application deployment files
+│   ├── databases/         # Database StatefulSets
+│   ├── monitoring/        # Prometheus and Grafana setup
+│   ├── ingress/          # Ingress configurations
+│   ├── env/              # Environment-specific configs
+│   │   ├── dev/         # Development environment
+│   │   ├── staging/     # Staging environment
+│   │   └── prod/        # Production environment
+│   └── scripts/          # Deployment and maintenance scripts
+├── src/                   # Application source code
+│   ├── main/
+│   │   ├── java/        # Java source files
+│   │   └── resources/   # Application resources
+│   └── test/            # Test files
+├── docs/                  # Documentation
+└── pom.xml               # Maven configuration
 ```
 
-## Directory Structure
+## Kubernetes Configuration
 
-### Base Package (com.example.base)
-- **config**: Configuration classes
-- **controller**: Base controller classes
-- **dto**: Data Transfer Objects
-- **exception**: Custom exceptions
-- **model**: Base entity classes
-- **repository**: Base repository interfaces
-- **security**: Security related classes
-- **service**: Base service classes
+### Application (k8s/app/)
+- Deployment configurations for the Spring Boot application
+- Service definitions
+- Resource limits and requests
+- Health check configurations
 
-### Demo Package (com.example.demo)
-- **controller**: Example controllers
-- **dto**: Example DTOs
-- **model**: Example entities
-- **repository**: Example repositories
-- **service**: Example services
+### Databases (k8s/databases/)
+- PostgreSQL StatefulSet and Service
+- MongoDB StatefulSet and Service
+- Redis StatefulSet and Service
+- Persistent volume claims
 
-### Resources
-- **application.yml**: Main configuration
-- **application-local.yml**: Local environment configuration
-- **application-test.yml**: Test environment configuration
+### Monitoring (k8s/monitoring/)
+- Prometheus deployment and configuration
+- Grafana deployment and dashboards
+- Service monitors and alerts
 
-### Docker
-- **scripts**: Utility scripts
-- **docker-compose.yml**: Container configuration
+### Ingress (k8s/ingress/)
+- Ingress rules for all services
+- TLS configuration
+- Path-based routing
+
+### Environment Configurations (k8s/env/)
+- Environment-specific variables
+- Secrets management
+- Resource quotas
+- Network policies
+
+### Utility Scripts (k8s/scripts/)
+- Deployment automation
+- Backup procedures
+- Environment cleanup
+- Health checks
+
+## Application Structure
+
+### Source Code (src/)
+
+#### Main Application (src/main/java/)
+- Controllers: REST endpoints
+- Services: Business logic
+- Repositories: Data access
+- Models: Domain entities
+- Configuration: Application setup
+
+#### Resources (src/main/resources/)
+- Application properties
+- Logging configuration
+- Database migrations
+- Static resources
+
+#### Tests (src/test/)
+- Unit tests
+- Integration tests
+- Performance tests
+
+## Security
+
+The application implements multiple security layers:
+
+1. Network Security
+   - Network policies
+   - TLS encryption
+   - Ingress rules
+
+2. Application Security
+   - JWT authentication
+   - Role-based access control
+   - Input validation
+
+3. Data Security
+   - Encrypted secrets
+   - Secure connections
+   - Data encryption
+
+## Monitoring and Observability
+
+1. Metrics Collection
+   - Application metrics
+   - JVM metrics
+   - Custom business metrics
+
+2. Logging
+   - Structured logging
+   - Log aggregation
+   - Error tracking
+
+3. Alerting
+   - Resource utilization
+   - Error rates
+   - Business KPIs
+
+## Deployment Process
+
+1. Environment Setup
+   ```bash
+   ./k8s/scripts/deploy.sh <environment>
+   ```
+
+2. Monitoring Setup
+   - Prometheus deployment
+   - Grafana configuration
+   - Alert rules setup
+
+3. Database Management
+   - Initialization
+   - Migrations
+   - Backups
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines and processes.
 
 ---
 
 <a name="tiếng-việt"></a>
 # Cấu trúc dự án
 
+## Overview
+
+The Finish App is structured as a Kubernetes-based microservices application with the following main components:
+
 ```
-src/
-├── main/
-│   ├── java/
-│   │   ├── com.example.base/
-│   │   │   ├── config/
-│   │   │   ├── controller/
-│   │   │   ├── dto/
-│   │   │   ├── exception/
-│   │   │   ├── model/
-│   │   │   ├── repository/
-│   │   │   ├── security/
-│   │   │   ├── service/
-│   │   │   └── Application.java
-│   │   └── com.example.demo/
-│   │       ├── controller/
-│   │       ├── dto/
-│   │       ├── model/
-│   │       ├── repository/
-│   │       └── service/
-│   └── resources/
-│       ├── application.yml
-│       ├── application-local.yml
-│       └── application-test.yml
-├── test/
-│   └── java/
-│       └── com.example.base/
-└── docker/
-    ├── scripts/
-    └── docker-compose.yml
+.
+├── k8s/                    # Kubernetes configuration files
+│   ├── app/               # Application deployment files
+│   ├── databases/         # Database StatefulSets
+│   ├── monitoring/        # Prometheus and Grafana setup
+│   ├── ingress/          # Ingress configurations
+│   ├── env/              # Environment-specific configs
+│   │   ├── dev/         # Development environment
+│   │   ├── staging/     # Staging environment
+│   │   └── prod/        # Production environment
+│   └── scripts/          # Deployment and maintenance scripts
+├── src/                   # Application source code
+│   ├── main/
+│   │   ├── java/        # Java source files
+│   │   └── resources/   # Application resources
+│   └── test/            # Test files
+├── docs/                  # Documentation
+└── pom.xml               # Maven configuration
 ```
 
-## Cấu trúc thư mục
+## Kubernetes Configuration
 
-### Gói Base (com.example.base)
-- **config**: Các lớp cấu hình
-- **controller**: Các lớp controller cơ sở
-- **dto**: Các đối tượng chuyển dữ liệu
-- **exception**: Các ngoại lệ tùy chỉnh
-- **model**: Các lớp entity cơ sở
-- **repository**: Các interface repository cơ sở
-- **security**: Các lớp liên quan đến bảo mật
-- **service**: Các lớp service cơ sở
+### Application (k8s/app/)
+- Deployment configurations for the Spring Boot application
+- Service definitions
+- Resource limits and requests
+- Health check configurations
 
-### Gói Demo (com.example.demo)
-- **controller**: Các controller ví dụ
-- **dto**: Các DTO ví dụ
-- **model**: Các entity ví dụ
-- **repository**: Các repository ví dụ
-- **service**: Các service ví dụ
+### Databases (k8s/databases/)
+- PostgreSQL StatefulSet and Service
+- MongoDB StatefulSet and Service
+- Redis StatefulSet and Service
+- Persistent volume claims
 
-### Resources
-- **application.yml**: Cấu hình chính
-- **application-local.yml**: Cấu hình môi trường local
-- **application-test.yml**: Cấu hình môi trường test
+### Monitoring (k8s/monitoring/)
+- Prometheus deployment and configuration
+- Grafana deployment and dashboards
+- Service monitors and alerts
 
-### Docker
-- **scripts**: Các script tiện ích
-- **docker-compose.yml**: Cấu hình container 
+### Ingress (k8s/ingress/)
+- Ingress rules for all services
+- TLS configuration
+- Path-based routing
+
+### Environment Configurations (k8s/env/)
+- Environment-specific variables
+- Secrets management
+- Resource quotas
+- Network policies
+
+### Utility Scripts (k8s/scripts/)
+- Deployment automation
+- Backup procedures
+- Environment cleanup
+- Health checks
+
+## Application Structure
+
+### Source Code (src/)
+
+#### Main Application (src/main/java/)
+- Controllers: REST endpoints
+- Services: Business logic
+- Repositories: Data access
+- Models: Domain entities
+- Configuration: Application setup
+
+#### Resources (src/main/resources/)
+- Application properties
+- Logging configuration
+- Database migrations
+- Static resources
+
+#### Tests (src/test/)
+- Unit tests
+- Integration tests
+- Performance tests
+
+## Security
+
+The application implements multiple security layers:
+
+1. Network Security
+   - Network policies
+   - TLS encryption
+   - Ingress rules
+
+2. Application Security
+   - JWT authentication
+   - Role-based access control
+   - Input validation
+
+3. Data Security
+   - Encrypted secrets
+   - Secure connections
+   - Data encryption
+
+## Monitoring and Observability
+
+1. Metrics Collection
+   - Application metrics
+   - JVM metrics
+   - Custom business metrics
+
+2. Logging
+   - Structured logging
+   - Log aggregation
+   - Error tracking
+
+3. Alerting
+   - Resource utilization
+   - Error rates
+   - Business KPIs
+
+## Deployment Process
+
+1. Environment Setup
+   ```bash
+   ./k8s/scripts/deploy.sh <environment>
+   ```
+
+2. Monitoring Setup
+   - Prometheus deployment
+   - Grafana configuration
+   - Alert rules setup
+
+3. Database Management
+   - Initialization
+   - Migrations
+   - Backups
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines and processes. 

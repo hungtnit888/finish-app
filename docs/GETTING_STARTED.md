@@ -6,87 +6,167 @@
 ---
 
 <a name="english"></a>
-# Getting Started
+# Getting Started with Finish App
+
+This guide will help you set up and run the Finish App on your Kubernetes cluster.
 
 ## Prerequisites
 
-- Java 17
-- Maven 3.8+
-- Docker & Docker Compose
-- PostgreSQL 15
-- MongoDB 6
-- Redis 7
+Before you begin, ensure you have the following installed:
 
-## Installation
+- Kubernetes cluster (minikube, kind, or cloud provider)
+- kubectl CLI tool
+- Helm package manager
+- Git
 
-1. Clone repository:
+## Setup Steps
+
+1. Clone the repository:
 ```bash
 git clone https://github.com/yourusername/finish-app.git
 cd finish-app
 ```
 
-2. Build application:
+2. Install Ingress Controller:
 ```bash
-mvn clean install
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+helm install ingress-nginx ingress-nginx/ingress-nginx
 ```
 
-3. Run with Docker Compose:
+3. Deploy the application:
+
+For development:
 ```bash
-docker-compose -f docker/docker-compose.yml up -d
+./k8s/scripts/deploy.sh dev
 ```
 
-## Access Applications
-
-- API: http://localhost:8080
-- Swagger UI: http://localhost:8080/swagger-ui.html
-- Grafana: http://localhost:3000
-- Prometheus: http://localhost:9090
-
-## Development
-
-1. **Local Development**
+For staging:
 ```bash
-mvn spring-boot:run -Dspring.profiles.active=local
+./k8s/scripts/deploy.sh staging
 ```
 
-2. **Run Tests**
+For production:
 ```bash
-mvn test
+./k8s/scripts/deploy.sh prod
 ```
 
-3. **Database Migrations**
+## Verifying the Installation
+
+1. Check if all pods are running:
 ```bash
-mvn liquibase:update
+kubectl get pods -n finish-app
+kubectl get pods -n monitoring
 ```
 
-4. **Code Quality**
+2. Check services:
 ```bash
-mvn sonar:sonar
+kubectl get svc -n finish-app
+kubectl get svc -n monitoring
 ```
 
-## Monitoring & Maintenance
-
-1. **Redis Management**
+3. Check ingress:
 ```bash
-# Backup
-./docker/scripts/redis-backup.sh
-
-# Restore
-./docker/scripts/redis-restore.sh redis_backup_20240315_120000.rdb.gz
-
-# Monitor
-nohup ./docker/scripts/redis-monitor.sh &
+kubectl get ingress -n finish-app
 ```
 
-2. **Database Backup**
+## Accessing the Application
+
+Once deployed, you can access the following services:
+
+- Application: http://app.example.com
+- Prometheus: http://prometheus.example.com
+- Grafana: http://grafana.example.com
+
+Note: Update your DNS or hosts file to point these domains to your cluster's IP address.
+
+## Environment Configuration
+
+The application supports three environments:
+
+1. Development (dev)
+   - Debug level logging
+   - Development mode features enabled
+   - Less strict security settings
+
+2. Staging
+   - Info level logging
+   - Production-like environment
+   - Staging data and configurations
+
+3. Production (prod)
+   - Warning level logging
+   - Maximum security settings
+   - Production-ready configurations
+
+## Monitoring
+
+The application comes with built-in monitoring:
+
+1. Prometheus
+   - Metrics collection
+   - Query interface at http://prometheus.example.com
+
+2. Grafana
+   - Pre-configured dashboards
+   - Access at http://grafana.example.com
+   - Default credentials:
+     - Username: admin
+     - Password: admin
+
+## Maintenance
+
+### Backups
+
+Create database backups:
 ```bash
-./docker/scripts/backup.sh
+./k8s/scripts/backup.sh <environment>
 ```
 
-3. **System Recovery**
+### Cleanup
+
+Remove environment:
 ```bash
-./docker/scripts/recovery.sh
+./k8s/scripts/cleanup.sh <environment>
 ```
+
+## Troubleshooting
+
+### Common Issues
+
+1. Pods not starting
+```bash
+kubectl describe pod <pod-name> -n finish-app
+```
+
+2. Service not accessible
+```bash
+kubectl get svc -n finish-app
+kubectl describe svc <service-name> -n finish-app
+```
+
+3. Ingress issues
+```bash
+kubectl describe ingress -n finish-app
+```
+
+### Viewing Logs
+
+Application logs:
+```bash
+kubectl logs -f <pod-name> -n finish-app
+```
+
+Database logs:
+```bash
+kubectl logs -f <database-pod-name> -n finish-app
+```
+
+## Next Steps
+
+- Read the [Architecture Documentation](STRUCTURE.md)
+- Check the [Security Guidelines](SECURITY.md)
+- Review the [Contributing Guide](CONTRIBUTING.md)
 
 ---
 
