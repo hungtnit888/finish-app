@@ -1,186 +1,177 @@
-# Hướng dẫn bắt đầu
+# Language / Ngôn ngữ
 
-## Tổng quan
-Tài liệu này hướng dẫn cách thiết lập môi trường phát triển cho dự án Finish App. Để biết thêm thông tin về dự án, vui lòng xem [../README.md](../README.md). Để hiểu rõ về cấu trúc dự án, vui lòng xem [STRUCTURE.md](STRUCTURE.md).
+- [English](#english)
+- [Tiếng Việt](#tiếng-việt)
 
-## Yêu cầu hệ thống
-- JDK 11
-- Docker
+---
+
+<a name="english"></a>
+# Getting Started
+
+## Prerequisites
+
+- Java 17
 - Maven 3.8+
-- Git
-- IDE (IntelliJ IDEA hoặc VS Code)
+- Docker & Docker Compose
+- PostgreSQL 15
+- MongoDB 6
+- Redis 7
 
-## Cài đặt môi trường
+## Installation
 
-1. Cài đặt Docker
+1. Clone repository:
 ```bash
-# Ubuntu
-sudo apt-get update
-sudo apt-get install docker.io docker-compose
-
-# Thêm user vào group docker
-sudo usermod -aG docker $USER
-newgrp docker
-```
-
-2. Kiểm tra cài đặt
-```bash
-docker --version
-docker-compose --version
-```
-
-## Khởi động môi trường development
-
-1. Clone repository
-```bash
-git clone <repository_url>
+git clone https://github.com/yourusername/finish-app.git
 cd finish-app
 ```
 
-2. Khởi động môi trường
+2. Build application:
 ```bash
-cd docker
-docker-compose up -d
-```
-
-3. Kiểm tra các service
-```bash
-docker-compose ps
-```
-
-## Cấu hình IDE
-
-### IntelliJ IDEA
-
-1. Mở project
-- File -> Open -> Chọn thư mục project
-
-2. Cấu hình Java SDK
-- File -> Project Structure -> Project
-- Project SDK: chọn Java 11
-- Project language level: 11
-
-3. Cấu hình Maven
-- Settings -> Build, Execution, Deployment -> Build Tools -> Maven
-- Maven home: `/home/developer/.m2`
-- User settings file: `docker/app/settings.xml`
-
-4. Cấu hình Remote Development
-- Settings -> Build, Execution, Deployment -> Docker
-- Thêm Docker connection: tcp://localhost:2375
-
-### Visual Studio Code
-
-1. Cài đặt extensions
-- Java Extension Pack
-- Spring Boot Extension Pack
-- Docker
-- Remote Development
-
-2. Mở project
-- File -> Open Folder -> Chọn thư mục project
-
-3. Cấu hình Java
-- Command Palette (Ctrl+Shift+P)
-- Java: Configure Java Runtime
-- Chọn Java 11
-
-4. Cấu hình Remote Development
-- Command Palette
-- Remote-Containers: Open Folder in Container
-- Chọn thư mục project
-
-## Kiểm tra cài đặt
-
-1. Kiểm tra ứng dụng
-```bash
-curl http://localhost:8080/actuator/health
-```
-
-2. Kiểm tra databases
-```bash
-# PostgreSQL
-psql -h localhost -p 5432 -U postgres -d finish_app
-
-# MongoDB
-mongosh mongodb://localhost:27017
-```
-
-3. Kiểm tra monitoring
-- Prometheus: http://localhost:9090
-- Grafana: http://localhost:3000
-
-## Phát triển
-
-### 1. Truy cập container development
-```bash
-ssh developer@localhost -p 2222
-# Password: developer
-```
-
-### 2. Build project
-```bash
-cd /app
 mvn clean install
 ```
 
-### 3. Chạy tests
+3. Run with Docker Compose:
+```bash
+docker-compose -f docker/docker-compose.yml up -d
+```
+
+## Access Applications
+
+- API: http://localhost:8080
+- Swagger UI: http://localhost:8080/swagger-ui.html
+- Grafana: http://localhost:3000
+- Prometheus: http://localhost:9090
+
+## Development
+
+1. **Local Development**
+```bash
+mvn spring-boot:run -Dspring.profiles.active=local
+```
+
+2. **Run Tests**
 ```bash
 mvn test
 ```
 
-### 4. Restart application
+3. **Database Migrations**
 ```bash
-docker-compose restart app
+mvn liquibase:update
 ```
 
-## Debugging
-
-1. Remote debugging
-- Port: 5005
-- IDE configuration:
-  - IntelliJ IDEA: Run -> Edit Configurations -> Remote JVM Debug
-  - VS Code: launch.json -> Java Debug Configuration
-
-2. Logs
+4. **Code Quality**
 ```bash
-# Application logs
-docker-compose logs -f app
-
-# Database logs
-docker-compose logs -f postgres
-docker-compose logs -f mongodb
+mvn sonar:sonar
 ```
 
-## Tips
+## Monitoring & Maintenance
 
-1. Hot reload
-- Spring Boot DevTools đã được cấu hình
-- Các thay đổi trong code sẽ tự động reload
+1. **Redis Management**
+```bash
+# Backup
+./docker/scripts/redis-backup.sh
 
-2. Database migrations
-- Liquibase tự động chạy khi khởi động
-- Files migration trong src/main/resources/db/changelog
+# Restore
+./docker/scripts/redis-restore.sh redis_backup_20240315_120000.rdb.gz
 
-3. API Documentation
+# Monitor
+nohup ./docker/scripts/redis-monitor.sh &
+```
+
+2. **Database Backup**
+```bash
+./docker/scripts/backup.sh
+```
+
+3. **System Recovery**
+```bash
+./docker/scripts/recovery.sh
+```
+
+---
+
+<a name="tiếng-việt"></a>
+# Bắt đầu
+
+## Yêu cầu hệ thống
+
+- Java 17
+- Maven 3.8+
+- Docker & Docker Compose
+- PostgreSQL 15
+- MongoDB 6
+- Redis 7
+
+## Cài đặt
+
+1. Clone repository:
+```bash
+git clone https://github.com/yourusername/finish-app.git
+cd finish-app
+```
+
+2. Build ứng dụng:
+```bash
+mvn clean install
+```
+
+3. Chạy với Docker Compose:
+```bash
+docker-compose -f docker/docker-compose.yml up -d
+```
+
+## Truy cập ứng dụng
+
+- API: http://localhost:8080
 - Swagger UI: http://localhost:8080/swagger-ui.html
-- OpenAPI docs: http://localhost:8080/v3/api-docs
+- Grafana: http://localhost:3000
+- Prometheus: http://localhost:9090
 
-4. Monitoring
-- Spring Boot Actuator: http://localhost:8080/actuator
-- Prometheus metrics: http://localhost:8080/actuator/prometheus
-- Grafana dashboards: http://localhost:3000
+## Phát triển
 
-## Xử lý sự cố
+1. **Phát triển cục bộ**
+```bash
+mvn spring-boot:run -Dspring.profiles.active=local
+```
 
-### 1. Container không khởi động
-- Kiểm tra logs: `docker logs spring-dev`
-- Kiểm tra cấu hình: `docker inspect spring-dev`
+2. **Chạy kiểm thử**
+```bash
+mvn test
+```
 
-### 2. Maven build failed
-- Kiểm tra settings.xml
-- Kiểm tra network connection
-- Clear Maven cache: `mvn clean`
+3. **Di chuyển cơ sở dữ liệu**
+```bash
+mvn liquibase:update
+```
+
+4. **Chất lượng mã nguồn**
+```bash
+mvn sonar:sonar
+```
+
+## Giám sát & Bảo trì
+
+1. **Quản lý Redis**
+```bash
+# Sao lưu
+./docker/scripts/redis-backup.sh
+
+# Khôi phục
+./docker/scripts/redis-restore.sh redis_backup_20240315_120000.rdb.gz
+
+# Giám sát
+nohup ./docker/scripts/redis-monitor.sh &
+```
+
+2. **Sao lưu cơ sở dữ liệu**
+```bash
+./docker/scripts/backup.sh
+```
+
+3. **Khôi phục hệ thống**
+```bash
+./docker/scripts/recovery.sh
+```
 
 ## Tài nguyên bổ sung
 - [Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/current/reference/html/)
