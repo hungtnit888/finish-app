@@ -1,7 +1,7 @@
 package com.example.demo.dto;
 
 import com.example.base.dto.BaseDTO;
-import com.example.base.security.Role;
+// import com.example.base.security.Role; // Remove unused Role enum import
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -24,6 +24,6 @@ public class UserDTO extends BaseDTO {
     @NotBlank(message = "Full name is required")
     private String fullName;
 
-    private Set<Role> roles;
+    private Set<String> roles;
     private boolean enabled;
 } 

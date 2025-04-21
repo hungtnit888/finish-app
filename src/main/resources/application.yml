@@ -14,7 +14,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
   datasource:
     url: jdbc:postgresql://localhost:5432/finish_app
@@ -50,9 +50,6 @@ spring:
       use-key-prefix: true
       key-prefix: finish-app
       enable-statistics: true
-  liquibase:
-    enabled: true
-    change-log: classpath:db/changelog/db.changelog-master.xml
   security:
     oauth2:
       resourceserver:

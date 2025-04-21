@@ -9,7 +9,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
+// Bỏ import UserDetailsService nếu không dùng trực tiếp ở đây
+// import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -17,6 +18,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+// @EnableGlobalMethodSecurity is deprecated in newer Spring Security versions,
+// consider using @EnableMethodSecurity(prePostEnabled = true) instead if applicable
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -30,13 +33,15 @@ public class SecurityConfig {
             .authorizeRequests(auth -> auth
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/public/**").permitAll()
-                .anyRequest().authenticated()
+                .antMatchers("/actuator/**").permitAll() // Cho phép actuator không cần /api prefix
+                .anyRequest().authenticated() // Yêu cầu xác thực cho các request khác
             )
             .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Không sử dụng session
             )
+            // Thêm bộ lọc JWT trước bộ lọc xử lý username/password
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
+        System.out.println("SecurityConfig");
         return http.build();
     }
 
@@ -49,4 +54,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-} 
+}

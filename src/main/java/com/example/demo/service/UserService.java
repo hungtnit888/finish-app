@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,7 +59,9 @@ public class UserService extends BaseService<User, UserDTO, Long> {
 
         User user = convertToEntity(userDTO);
         user.setPassword(passwordEncoder.encode(password));
-        return convertToDTO(userRepository.save(user));
+
+        User savedUser = userRepository.save(user);
+        return convertToDTO(savedUser);
     }
 
     @Transactional
@@ -79,10 +82,11 @@ public class UserService extends BaseService<User, UserDTO, Long> {
         existingUser.setUsername(userDTO.getUsername());
         existingUser.setEmail(userDTO.getEmail());
         existingUser.setFullName(userDTO.getFullName());
-        existingUser.setRoles(userDTO.getRoles());
         existingUser.setEnabled(userDTO.isEnabled());
+        existingUser.setRoles(userDTO.getRoles());
 
-        return convertToDTO(userRepository.save(existingUser));
+        User updatedUser = userRepository.save(existingUser);
+        return convertToDTO(updatedUser);
     }
 
     public List<UserDTO> getAllUsers() {

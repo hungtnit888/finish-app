@@ -1,3 +1,4 @@
+com/example/base/dto/JwtResponseDTO.class
 com/example/base/security/SecurityConfig.class
 com/example/base/security/AuthEntryPointJwt.class
 com/example/base/repository/BaseRepository.class
@@ -5,9 +6,9 @@ com/example/base/config/OpenApiConfig.class
 com/example/base/security/CustomUserDetailsService.class
 com/example/base/controller/CacheController.class
 com/example/base/exception/GlobalExceptionHandler.class
+com/example/Application.class
 com/example/base/dto/BaseDTO.class
 com/example/demo/model/User.class
-com/example/base/Application.class
 com/example/demo/service/UserService.class
 com/example/demo/repository/UserRepository.class
 com/example/base/security/Permission.class
@@ -22,8 +23,10 @@ com/example/base/service/CacheService.class
 com/example/base/exception/BusinessException.class
 com/example/demo/dto/UserDTO.class
 com/example/base/service/BaseService.class
+com/example/base/dto/LoginRequestDTO.class
 com/example/base/controller/BaseController.class
 com/example/demo/controller/UserController.class
 com/example/base/exception/SecurityException.class
 com/example/base/exception/ResourceNotFoundException.class
 com/example/base/model/BaseEntity.class
+com/example/demo/controller/AuthController.class
