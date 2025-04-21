@@ -11,9 +11,16 @@ spring:
           batch_size: 50
         order_inserts: true
         order_updates: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
+    show-sql: true
   datasource:
+    url: jdbc:postgresql://localhost:5432/finish_app
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
       minimum-idle: 5
@@ -22,10 +29,10 @@ spring:
       max-lifetime: 1200000
   data:
     mongodb:
-      auto-index-creation: true
+      uri: mongodb://localhost:27017/finish_app
     redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+      host: localhost
+      port: 6379
       password: ${REDIS_PASSWORD:}
       database: ${REDIS_DATABASE:0}
       timeout: 10000
@@ -51,6 +58,9 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${AUTH_SERVER_URL:http://localhost:8080/auth/realms/finish-app}
+    user:
+      name: admin
+      password: admin
   cloud:
     config:
       enabled: false
@@ -60,6 +70,13 @@ spring:
 server:
   port: 8080
   shutdown: graceful
+  servlet:
+    context-path: /api
+    session:
+      timeout: 30m
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   compression:
     enabled: true
     mime-types: application/json,application/xml,text/html,text/xml,text/plain
@@ -72,7 +89,7 @@ management:
         include: health,info,prometheus,metrics
   endpoint:
     health:
-      show-details: when_authorized
+      show-details: ALWAYS
       probes:
         enabled: true
   metrics:
@@ -99,98 +116,35 @@ sentry:
 
 logging:
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   level:
     root: INFO
     com.example: DEBUG
-    org.springframework.web: INFO
+    org.springframework: INFO
     org.hibernate: INFO
     org.mongodb: INFO
-
-# Database configurations
-datasource:
-  url: jdbc:postgresql://localhost:5432/basedb
-  username: postgres
-  password: postgres
-  driver-class-name: org.postgresql.Driver
-
-# MongoDB configuration
-data:
-  mongodb:
-    uri: mongodb://localhost:27017/basedb
-
-# Redis configuration
-redis:
-  host: localhost
-  port: 6379
-
-# Liquibase configuration
-liquibase:
-  change-log: classpath:db/changelog/db.changelog-master.xml
-  enabled: true
-
-# Security configuration
-security:
-  jwt:
-    secret: your-secret-key
-    expiration: 86400000 # 24 hours
-
-# Quartz configuration
-quartz:
-  job-store-type: jdbc
-  properties:
-    org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
-
-# Cloud configuration
-cloud:
-  config:
-    enabled: false
-  discovery:
-    enabled: false
-
-# Server configuration
-server:
-  port: 8080
-  servlet:
-    context-path: /api
-
-# Actuator configuration
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,prometheus
-  endpoint:
-    health:
-      show-details: always
-
-# Swagger configuration
-springdoc:
-  api-docs:
-    path: /api-docs
-  swagger-ui:
-    path: /swagger-ui.html
-    operationsSorter: method
-
-# Sentry configuration
-sentry:
-  dsn: your-sentry-dsn
-  traces-sample-rate: 1.0
-  logging:
-    minimum-event-level: WARN
-    minimum-breadcrumb-level: INFO
-
-# Logging configuration
-logging:
-  level:
-    root: INFO
-    com.newcom.base: DEBUG
-    org.springframework.web: INFO
-    org.hibernate: INFO
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   file:
     name: logs/application.log
     max-size: 10MB
-    max-history: 7 
+    max-history: 7
+
+quartz:
+  job-store-type: jdbc
+  jdbc:
+    initialize-schema: always
+  properties:
+    org.quartz.scheduler.instanceName: FinishAppScheduler
+    org.quartz.threadPool.threadCount: 5
+    org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+
+app:
+  jwtSecret: your-secret-key-here-must-be-at-least-256-bits-long
+  jwtExpiration: 86400000 # 24 hours in milliseconds
+  jwtExpirationInMs: 86400000 # 24 hours in milliseconds
+
+jwt:
+  secret: your-secret-key-here-must-be-at-least-32-characters-long
+  expiration: 86400000 # 24 hours in milliseconds
+  header: Authorization
+  prefix: Bearer 

@@ -6,6 +6,10 @@
     <springProperty scope="context" name="springAppName" source="spring.application.name"/>
     <springProperty scope="context" name="sentryDsn" source="sentry.dsn"/>
 
+    <property name="LOG_PATH" value="/tmp" />
+    <property name="LOG_FILE" value="${LOG_PATH}/application.log" />
+    <property name="LOG_ARCHIVE" value="${LOG_PATH}/archive" />
+
     <!-- Sentry configuration -->
     <appender name="Sentry" class="io.sentry.logback.SentryAppender">
         <options>
@@ -17,17 +21,14 @@
 
     <!-- File appender -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/application.log</file>
-        <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
+        <file>${LOG_FILE}</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/application.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>10MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
-            <maxHistory>7</maxHistory>
+            <fileNamePattern>${LOG_ARCHIVE}/application.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
         </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
     </appender>
 
     <!-- Async appender for better performance -->

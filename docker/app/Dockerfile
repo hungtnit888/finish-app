@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y \
     git \
     openssh-server \
     curl \
+    maven \
     && rm -rf /var/lib/apt/lists/*
 
 # Create developer user
@@ -28,7 +29,8 @@ RUN useradd -m -s /bin/bash developer && \
 # Configure SSH
 RUN mkdir /var/run/sshd && \
     echo "PermitRootLogin no" >> /etc/ssh/sshd_config && \
-    echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
+    echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config && \
+    ssh-keygen -A
 
 # Copy Maven settings
 COPY docker/app/settings.xml /home/developer/.m2/settings.xml
@@ -42,22 +44,34 @@ ENV PATH=$PATH:$JAVA_HOME/bin
 WORKDIR /app
 RUN chown -R developer:developer /app
 
-# Copy built application
-COPY --from=builder /build/target/*.jar /app/app.jar
-
 # Create log directory
 RUN mkdir -p /app/logs && \
     chown -R developer:developer /app/logs
 
+# Copy built application from builder stage
+COPY --from=builder /build/target/*.jar /app/app.jar
+RUN chown developer:developer /app/app.jar
+
+# Download Spring Boot plugin
+RUN mvn dependency:get -Dartifact=org.springframework.boot:spring-boot-maven-plugin:2.7.18
+
+# Create startup script
+RUN echo '#!/bin/bash' > /start.sh && \
+    echo '/usr/sbin/sshd -D &' >> /start.sh && \
+    echo 'if [ "$MODE" = "development" ]; then' >> /start.sh && \
+    echo '  cd /app && mvn spring-boot:run' >> /start.sh && \
+    echo 'else' >> /start.sh && \
+    echo '  cd /app && java -jar app.jar' >> /start.sh && \
+    echo 'fi' >> /start.sh && \
+    chmod +x /start.sh
+
 # Expose ports
 EXPOSE 22 8080
 
-# Switch to developer user
-USER developer
-
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:8080/actuator/health || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD sleep 10 && curl -f http://localhost:8080/api/actuator/health || exit 1
 
-# Start SSH server and application
-CMD ["/usr/sbin/sshd", "-D"] 
+# Start both SSH server and application as root
+USER root
+CMD ["/bin/bash", "/start.sh"]

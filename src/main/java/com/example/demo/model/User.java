@@ -2,7 +2,7 @@ package com.example.demo.model;
 
 import com.example.base.model.BaseEntity;
 import com.example.base.security.Role;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
