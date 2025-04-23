@@ -1,5 +1,6 @@
 package com.example.base.security;
 
+import com.example.base.config.ApiRoutes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,10 +32,17 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeRequests(auth -> auth
-                .antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/api/public/**").permitAll()
-                .antMatchers("/actuator/**").permitAll() // Cho phép actuator không cần /api prefix
-                .anyRequest().authenticated() // Yêu cầu xác thực cho các request khác
+                // Allow auth endpoints (login, refresh, logout) - ApiRoutes.AUTH giờ là /v1/auth
+                .antMatchers(ApiRoutes.AUTH + "/**").permitAll()
+                // Allow public endpoints - ApiRoutes.PUBLIC giờ là /v1/public
+                .antMatchers(ApiRoutes.PUBLIC + "/**").permitAll()
+                // Actuator endpoints (thường không bị ảnh hưởng bởi context-path)
+                .antMatchers("/actuator/**").permitAll()
+                // Add other public paths like swagger (thường không bị ảnh hưởng bởi context-path)
+                .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                // Allow access to the error path (không bị ảnh hưởng context-path)
+                .antMatchers("/error").permitAll()
+                .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Không sử dụng session

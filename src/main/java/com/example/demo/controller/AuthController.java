@@ -12,11 +12,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
@@ -29,20 +27,30 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     // TODO: Add a registration endpoint if needed
 
-    @PostMapping("/login") // Full path: /api/v1/auth/login
+    @PostMapping("/login")
     @Operation(summary = "Authenticate user and return JWT")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequestDTO loginRequest) {
+    public ResponseEntity<?> authenticateUser(
+            @Valid @RequestBody LoginRequestDTO loginRequest,
+            HttpServletRequest request) {
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()
-                )
-        );
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
         String jwt = jwtTokenProvider.generateToken(authentication);
 
         return ResponseEntity.ok(new JwtResponseDTO(jwt));
     }
+
+    // Tạm thời comment out các endpoint refresh/logout vì chúng phụ thuộc fingerprint/cookie
+    /*
+    @PostMapping("/refresh")
+    @Operation(summary = "Refresh access token using Refresh Token from cookie")
+    public ResponseEntity<?> refreshToken(...) { ... }
+
+    @PostMapping("/logout")
+    @Operation(summary = "Logout user and clear refresh token")
+    public ResponseEntity<?> logoutUser(...) { ... }
+    */
 } 
